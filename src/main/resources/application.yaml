@@ -1,0 +1,33 @@
+spring:
+  banner:
+    location: classpath:banner.txt
+  rabbitmq:
+    addresses: ${MQ_ADDRESSES:amqps://localhost:5672}
+
+server:
+  port: 8080
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+    org.springframework.security.web.FilterChainProxy: DEBUG
+    com.github.bucket4j: DEBUG
+    com.ced: DEBUG
+
+twilio:
+  account-sid: ${TWILIO_ACCOUNT_SID:xD}
+  auth-token: ${TWILIO_AUTH_TOKEN:xD}
+  phone-number: ${TWILIO_PHONE_NUMBER:xD}
+
+sendgrid:
+  api-key: ${SENDGRID_API_KEY:xD}
+  sender-email: ${SENDGRID_SENDER_EMAIL:xD}
+
+security:
+  token: ${SECURITY_TOKEN_PASSWORD:xD}
+  expiration: ${SECURITY_TOKEN_EXPIRATION:6000000}
+
+amqp:
+  exchange-name: ${EXCHANGE_NAME:xD}
+  queue-name: ${QUEUE_NAME:xD}
+  routing-key: ${ROUTING_KEY:xD}
