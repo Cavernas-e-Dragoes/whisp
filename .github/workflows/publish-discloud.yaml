@@ -67,12 +67,18 @@ jobs:
 
       - name: UploadZip to Discloud - Validate
         run: |
-          # Validate http_code
-          if [ "${{ steps.upload-zip.outputs.http_code }}" -ne 200 ]; then
-            echo "[ERROR] Error while executing upload. http_code=${{ steps.upload-zip.outputs.http_code }}"
+          # Decode the response body from Base64
+          response_body=$(echo "${{ steps.upload-zip.outputs.response_body }}" | base64 --decode)
+          
+          # Extract the "status" and "message" fields from the JSON
+          status=$(echo "$response_body" | jq -r '.status')
+          message=$(echo "$response_body" | jq -r '.message')
+          
+          # Validate the HTTP code and status
+          if [ "${{ steps.upload-zip.outputs.http_code }}" -ne 200 ] || [ "$status" != "ok" ]; then
+            echo "[ERROR] Error during upload. http_code=${{ steps.upload-zip.outputs.http_code }}, message=$message"
             exit 1
           else
-            echo "[SUCCESS] Upload executed successfully"
+            echo "[SUCCESS] Upload executed successfully. Status: $status"
           fi
-        shell:
-          bash
+        shell: bash
