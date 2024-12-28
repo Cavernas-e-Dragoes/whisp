@@ -54,6 +54,8 @@ jobs:
       - name: Create ZIP Package
         run: |
           cd target
+          cat discloud.config
+          cat application.yaml
           zip ${{ vars.APP_DISCLOUD_ID }}.zip $ARTIFACT_NAME discloud.config application.yaml
 
       - name: UploadZip to Discloud - Send
