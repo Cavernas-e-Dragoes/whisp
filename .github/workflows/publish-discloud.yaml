@@ -4,27 +4,20 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
-    inputs:
-      branch:
-        description: 'Publish Discloud App on this branch'
-        required: true
-        default: 'main'
+      - 1-automatizar-deploy-discloud
 
 jobs:
-  build:
+  publish-discloud:
     runs-on: ubuntu-latest
 
     steps:
       # Faz checkout da branch selecionada
       - name: Checkout Code
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ github.event.inputs.branch || github.ref_name }}
+        uses: actions/checkout@v4.2.2
 
       # Configura o Java
       - name: Set up JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4.6.0
         with:
           distribution: 'zulu'
           java-version: '17'
@@ -63,12 +56,9 @@ jobs:
           cd target
           zip ${{ vars.APP_DISCLOUD_ID }}.zip $ARTIFACT_NAME discloud.config application.yaml
 
-      - name: List files
-        run: ls -R
-
       - name: UploadZip to Discloud - Send
         id: upload-zip
-        uses: marco-quicula/discloud-api-action@v0.1.0
+        uses: marco-quicula/discloud-api-action@next
         with:
           discloud_api_token: ${{ secrets.DISCLOUD_API_TOKEN }}
           command: 'upload-zip'
