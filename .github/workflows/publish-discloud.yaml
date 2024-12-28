@@ -63,6 +63,9 @@ jobs:
           cd target
           zip ${{ vars.APP_DISCLOUD_ID }}.zip $ARTIFACT_NAME discloud.config application.yaml
 
+      - name: List files
+        run: ls -R
+
       - name: UploadZip to Discloud - Send
         id: upload-zip
         uses: marco-quicula/discloud-api-action@v0.1.0
