@@ -37,6 +37,11 @@ jobs:
           cp discloud/discloud.config target/
           sed -i "s/APP_DISCLOUD_ID_PLACEHOLDER/${{ vars.APP_DISCLOUD_ID }}/g" target/discloud.config
           sed -i "s/ARTIFACT_NAME_PLACEHOLDER/${{ env.ARTIFACT_NAME }}/g" target/discloud.config
+          cd target
+          echo "************************************"
+          echo "* File generated: discloud.config  *"
+          echo "************************************"
+          cat discloud.config
 
       # Copia e ajusta o application.yaml
       - name: Prepare application.yaml
@@ -49,13 +54,16 @@ jobs:
           sed -i "s/SENDGRID_SENDER_EMAIL_PLACEHOLDER/${{ vars.SENDGRID_SENDER_EMAIL }}/g" target/application.yaml
           sed -i "s/SECURITY_TOKEN_PASSWORD_PLACEHOLDER/${{ secrets.SECURITY_TOKEN_PASSWORD }}/g" target/application.yaml
           sed -i "s/SECURITY_TOKEN_EXPIRATION_PLACEHOLDER/${{ secrets.SECURITY_TOKEN_EXPIRATION }}/g" target/application.yaml
+          cd target
+          echo "************************************"
+          echo "* File generated: application.yaml *"
+          echo "************************************"
+          cat application.yaml
 
       # Gera o arquivo ZIP com discloud.config e o artefato
       - name: Create ZIP Package
         run: |
           cd target
-          cat discloud.config
-          cat application.yaml
           zip ${{ vars.APP_DISCLOUD_ID }}.zip $ARTIFACT_NAME discloud.config application.yaml
 
       - name: UploadZip to Discloud - Send
