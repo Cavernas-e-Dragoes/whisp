@@ -60,7 +60,7 @@ jobs:
 
       - name: UploadZip to Discloud - Send
         id: upload-zip
-        uses: marco-quicula/discloud-api-action@next
+        uses: marco-quicula/discloud-api-action@v0.1.1
         with:
           discloud_api_token: ${{ secrets.DISCLOUD_API_TOKEN }}
           command: 'upload-zip'
