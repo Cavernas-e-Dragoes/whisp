@@ -2,7 +2,7 @@ spring:
   banner:
     location: classpath:banner.txt
   rabbitmq:
-    addresses: MQ_ADDRESSES
+    addresses: MQ_ADDRESSES_PLACEHOLDER
 
 server:
   port: 8080
