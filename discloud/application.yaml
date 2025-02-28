@@ -1,6 +1,8 @@
 spring:
   banner:
     location: classpath:banner.txt
+  rabbitmq:
+    addresses: MQ_ADDRESSES
 
 server:
   port: 8080
@@ -12,24 +14,20 @@ logging:
     com.github.bucket4j: DEBUG
     com.ced: DEBUG
 
-cors:
-  allowed-origins:
-    - https://characters.discloud.app
-    - https://whisp.discloud.app
-    - http://localhost:4200
-    - https://cavernas-e-dragoes.web.app
-    - https://cavernasedragoes.com.br
-    - https://www.cavernasedragoes.com.br
-
 twilio:
-  account-sid: TWILIO_ACCOUNT_SID_PLACEHOLDER
-  auth-token: TWILIO_AUTH_TOKEN_PLACEHOLDER
-  phone-number: TWILIO_PHONE_NUMBER_PLACEHOLDER
+  account-sid: TWILIO_ACCOUNT_SID
+  auth-token: TWILIO_AUTH_TOKEN
+  phone-number: TWILIO_PHONE_NUMBER
 
 sendgrid:
-  api-key: SENDGRID_API_KEY_PLACEHOLDER
-  sender-email: SENDGRID_SENDER_EMAIL_PLACEHOLDER
+  api-key: SENDGRID_API_KEY
+  sender-email: SENDGRID_SENDER_EMAIL
 
 security:
-  token: SECURITY_TOKEN_PASSWORD_PLACEHOLDER
-  expiration: SECURITY_TOKEN_EXPIRATION_PLACEHOLDER
+  token: SECURITY_TOKEN_PASSWORD
+  expiration: SECURITY_TOKEN_EXPIRATION
+
+amqp:
+  exchange-name: EXCHANGE_NAME
+  queue-name: QUEUE_NAME
+  routing-key: ROUTING_KEY
