@@ -47,6 +47,7 @@ jobs:
       - name: Prepare application.yaml
         run: |
           cp discloud/application.yaml target/
+          sed -i "s/MQ_ADDRESSES_PLACEHOLDER/${{ secrets.MQ_ADDRESSES }}/g" target/application.yaml
           sed -i "s/TWILIO_ACCOUNT_SID_PLACEHOLDER/${{ secrets.TWILIO_ACCOUNT_SID }}/g" target/application.yaml
           sed -i "s/TWILIO_AUTH_TOKEN_PLACEHOLDER/${{ secrets.TWILIO_AUTH_TOKEN }}/g" target/application.yaml
           sed -i "s/TWILIO_PHONE_NUMBER_PLACEHOLDER/${{ secrets.TWILIO_PHONE_NUMBER }}/g" target/application.yaml
@@ -54,11 +55,15 @@ jobs:
           sed -i "s/SENDGRID_SENDER_EMAIL_PLACEHOLDER/${{ vars.SENDGRID_SENDER_EMAIL }}/g" target/application.yaml
           sed -i "s/SECURITY_TOKEN_PASSWORD_PLACEHOLDER/${{ secrets.SECURITY_TOKEN_PASSWORD }}/g" target/application.yaml
           sed -i "s/SECURITY_TOKEN_EXPIRATION_PLACEHOLDER/${{ secrets.SECURITY_TOKEN_EXPIRATION }}/g" target/application.yaml
+          sed -i "s/EXCHANGE_NAME_PLACEHOLDER/${{ secrets.EXCHANGE_NAME }}/g" target/application.yaml
+          sed -i "s/QUEUE_NAME_PLACEHOLDER/${{ secrets.QUEUE_NAME }}/g" target/application.yaml
+          sed -i "s/ROUTING_KEY_PLACEHOLDER/${{ secrets.ROUTING_KEY }}/g" target/application.yaml
           cd target
           echo "************************************"
           echo "* File generated: application.yaml *"
           echo "************************************"
           cat application.yaml
+
 
       # Gera o arquivo ZIP com discloud.config e o artefato
       - name: Create ZIP Package
