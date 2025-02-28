@@ -1,0 +1,94 @@
+name: Publish Discloud App
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  publish-discloud:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Faz checkout da branch selecionada
+      - name: Checkout Code
+        uses: actions/checkout@v4.2.2
+
+      # Configura o Java
+      - name: Set up JDK
+        uses: actions/setup-java@v4.6.0
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      # Executa o Maven para fazer o build
+      - name: Build with Maven
+        run: mvn clean install
+
+      # Captura o nome do arquivo gerado
+      - name: Find Build Artifact
+        id: find-artifact
+        run: echo "ARTIFACT_NAME=$(find target -name '*.jar' -type f | xargs -n 1 basename)" >> $GITHUB_ENV
+
+      # Copia e ajusta o discloud.config
+      - name: Prepare discloud.config
+        run: |
+          cp discloud/discloud.config target/
+          sed -i "s/APP_DISCLOUD_ID_PLACEHOLDER/${{ vars.APP_DISCLOUD_ID }}/g" target/discloud.config
+          sed -i "s/ARTIFACT_NAME_PLACEHOLDER/${{ env.ARTIFACT_NAME }}/g" target/discloud.config
+          cd target
+          echo "************************************"
+          echo "* File generated: discloud.config  *"
+          echo "************************************"
+          cat discloud.config
+
+      # Copia e ajusta o application.yaml
+      - name: Prepare application.yaml
+        run: |
+          cp discloud/application.yaml target/
+          sed -i "s/TWILIO_ACCOUNT_SID_PLACEHOLDER/${{ secrets.TWILIO_ACCOUNT_SID }}/g" target/application.yaml
+          sed -i "s/TWILIO_AUTH_TOKEN_PLACEHOLDER/${{ secrets.TWILIO_AUTH_TOKEN }}/g" target/application.yaml
+          sed -i "s/TWILIO_PHONE_NUMBER_PLACEHOLDER/${{ secrets.TWILIO_PHONE_NUMBER }}/g" target/application.yaml
+          sed -i "s/SENDGRID_API_KEY_PLACEHOLDER/${{ secrets.SENDGRID_API_KEY }}/g" target/application.yaml
+          sed -i "s/SENDGRID_SENDER_EMAIL_PLACEHOLDER/${{ vars.SENDGRID_SENDER_EMAIL }}/g" target/application.yaml
+          sed -i "s/SECURITY_TOKEN_PASSWORD_PLACEHOLDER/${{ secrets.SECURITY_TOKEN_PASSWORD }}/g" target/application.yaml
+          sed -i "s/SECURITY_TOKEN_EXPIRATION_PLACEHOLDER/${{ secrets.SECURITY_TOKEN_EXPIRATION }}/g" target/application.yaml
+          cd target
+          echo "************************************"
+          echo "* File generated: application.yaml *"
+          echo "************************************"
+          cat application.yaml
+
+      # Gera o arquivo ZIP com discloud.config e o artefato
+      - name: Create ZIP Package
+        run: |
+          cd target
+          zip ${{ vars.APP_DISCLOUD_ID }}.zip $ARTIFACT_NAME discloud.config application.yaml
+
+      - name: UploadZip to Discloud - Send
+        id: upload-zip
+        uses: marco-quicula/discloud-api-action@v0.1.1
+        with:
+          discloud_api_token: ${{ secrets.DISCLOUD_API_TOKEN }}
+          command: 'upload-zip'
+          file: 'target/${{ vars.APP_DISCLOUD_ID }}.zip'
+          actionIfExists: 'DELETE'
+
+      - name: UploadZip to Discloud - Validate
+        run: |
+          # Decode the response body from Base64
+          response_body=$(echo "${{ steps.upload-zip.outputs.response_body }}" | base64 --decode)
+          
+          # Extract the "status" and "message" fields from the JSON
+          status=$(echo "$response_body" | jq -r '.status')
+          message=$(echo "$response_body" | jq -r '.message')
+          
+          # Validate the HTTP code and status
+          if [ "${{ steps.upload-zip.outputs.http_code }}" -ne 200 ] || [ "$status" != "ok" ]; then
+            echo "[ERROR] Error during upload. http_code=${{ steps.upload-zip.outputs.http_code }}, message=$message"
+            exit 1
+          else
+            echo "[SUCCESS] Upload executed successfully. Status: $status"
+          fi
+        shell: bash
