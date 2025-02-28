@@ -4,18 +4,17 @@ import com.ced.model.MessageRequest;
 import com.ced.properties.SendGridConfigProperties;
 import com.sendgrid.Method;
 import com.sendgrid.Request;
-import com.sendgrid.Response;
 import com.sendgrid.SendGrid;
 import com.sendgrid.helpers.mail.Mail;
 import com.sendgrid.helpers.mail.objects.Content;
-import org.springframework.stereotype.Service;
 import com.sendgrid.helpers.mail.objects.Email;
+import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
 import static com.ced.constants.ApplicationConstants.PROVIDER_EMAIL;
 import static com.ced.constants.ApplicationConstants.SENDGRID_PATH;
-import static com.ced.constants.ApplicationConstants.TEXT_PLAIN;
+import static com.ced.constants.ApplicationConstants.TEXT_HTML;
 
 @Service(PROVIDER_EMAIL)
 public class EmailService implements MessagingService {
@@ -30,7 +29,7 @@ public class EmailService implements MessagingService {
     public void sendMessage(final MessageRequest messageRequest) {
         Email from = new Email(config.getSenderEmail());
         Email recipient = new Email(messageRequest.getTo());
-        Content content = new Content(TEXT_PLAIN, messageRequest.getMessage());
+        Content content = new Content(TEXT_HTML, messageRequest.getMessage());
 
         Mail mail = new Mail(from, messageRequest.getSubject(), recipient, content);
         SendGrid sendGrid = new SendGrid(config.getApiKey());
