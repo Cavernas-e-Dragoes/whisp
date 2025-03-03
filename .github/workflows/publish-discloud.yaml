@@ -47,13 +47,35 @@ jobs:
       - name: Prepare application.yaml
         run: |
           cp discloud/application.yaml target/
-          sed -i "s/TWILIO_ACCOUNT_SID_PLACEHOLDER/${{ secrets.TWILIO_ACCOUNT_SID }}/g" target/application.yaml
-          sed -i "s/TWILIO_AUTH_TOKEN_PLACEHOLDER/${{ secrets.TWILIO_AUTH_TOKEN }}/g" target/application.yaml
-          sed -i "s/TWILIO_PHONE_NUMBER_PLACEHOLDER/${{ secrets.TWILIO_PHONE_NUMBER }}/g" target/application.yaml
-          sed -i "s/SENDGRID_API_KEY_PLACEHOLDER/${{ secrets.SENDGRID_API_KEY }}/g" target/application.yaml
-          sed -i "s/SENDGRID_SENDER_EMAIL_PLACEHOLDER/${{ vars.SENDGRID_SENDER_EMAIL }}/g" target/application.yaml
-          sed -i "s/SECURITY_TOKEN_PASSWORD_PLACEHOLDER/${{ secrets.SECURITY_TOKEN_PASSWORD }}/g" target/application.yaml
-          sed -i "s/SECURITY_TOKEN_EXPIRATION_PLACEHOLDER/${{ secrets.SECURITY_TOKEN_EXPIRATION }}/g" target/application.yaml
+
+          # Escapa caracteres especiais antes da substituição no sed
+          escape_sed() { echo "$1" | sed 's/[\/&]/\\&/g'; }
+
+          MQ_ADDRESSES_ESCAPED=$(escape_sed "${{ secrets.MQ_ADDRESSES }}")
+          TWILIO_ACCOUNT_SID_ESCAPED=$(escape_sed "${{ secrets.TWILIO_ACCOUNT_SID }}")
+          TWILIO_AUTH_TOKEN_ESCAPED=$(escape_sed "${{ secrets.TWILIO_AUTH_TOKEN }}")
+          TWILIO_PHONE_NUMBER_ESCAPED=$(escape_sed "${{ secrets.TWILIO_PHONE_NUMBER }}")
+          SENDGRID_API_KEY_ESCAPED=$(escape_sed "${{ secrets.SENDGRID_API_KEY }}")
+          SENDGRID_SENDER_EMAIL_ESCAPED=$(escape_sed "${{ vars.SENDGRID_SENDER_EMAIL }}")
+          SECURITY_TOKEN_PASSWORD_ESCAPED=$(escape_sed "${{ secrets.SECURITY_TOKEN_PASSWORD }}")
+          SECURITY_TOKEN_EXPIRATION_ESCAPED=$(escape_sed "${{ secrets.SECURITY_TOKEN_EXPIRATION }}")
+          EXCHANGE_NAME_ESCAPED=$(escape_sed "${{ secrets.EXCHANGE_NAME }}")
+          QUEUE_NAME_ESCAPED=$(escape_sed "${{ secrets.QUEUE_NAME }}")
+          ROUTING_KEY_ESCAPED=$(escape_sed "${{ secrets.ROUTING_KEY }}")
+
+          # Substitui os placeholders pelos valores reais
+          sed -i "s/MQ_ADDRESSES_PLACEHOLDER/${MQ_ADDRESSES_ESCAPED}/g" target/application.yaml
+          sed -i "s/TWILIO_ACCOUNT_SID_PLACEHOLDER/${TWILIO_ACCOUNT_SID_ESCAPED}/g" target/application.yaml
+          sed -i "s/TWILIO_AUTH_TOKEN_PLACEHOLDER/${TWILIO_AUTH_TOKEN_ESCAPED}/g" target/application.yaml
+          sed -i "s/TWILIO_PHONE_NUMBER_PLACEHOLDER/${TWILIO_PHONE_NUMBER_ESCAPED}/g" target/application.yaml
+          sed -i "s/SENDGRID_API_KEY_PLACEHOLDER/${SENDGRID_API_KEY_ESCAPED}/g" target/application.yaml
+          sed -i "s/SENDGRID_SENDER_EMAIL_PLACEHOLDER/${SENDGRID_SENDER_EMAIL_ESCAPED}/g" target/application.yaml
+          sed -i "s/SECURITY_TOKEN_PASSWORD_PLACEHOLDER/${SECURITY_TOKEN_PASSWORD_ESCAPED}/g" target/application.yaml
+          sed -i "s/SECURITY_TOKEN_EXPIRATION_PLACEHOLDER/${SECURITY_TOKEN_EXPIRATION_ESCAPED}/g" target/application.yaml
+          sed -i "s/EXCHANGE_NAME_PLACEHOLDER/${EXCHANGE_NAME_ESCAPED}/g" target/application.yaml
+          sed -i "s/QUEUE_NAME_PLACEHOLDER/${QUEUE_NAME_ESCAPED}/g" target/application.yaml
+          sed -i "s/ROUTING_KEY_PLACEHOLDER/${ROUTING_KEY_ESCAPED}/g" target/application.yaml
+
           cd target
           echo "************************************"
           echo "* File generated: application.yaml *"

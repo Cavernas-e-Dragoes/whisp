@@ -1,6 +1,8 @@
 spring:
   banner:
     location: classpath:banner.txt
+  rabbitmq:
+    addresses: MQ_ADDRESSES_PLACEHOLDER
 
 server:
   port: 8080
@@ -11,15 +13,6 @@ logging:
     org.springframework.security.web.FilterChainProxy: DEBUG
     com.github.bucket4j: DEBUG
     com.ced: DEBUG
-
-cors:
-  allowed-origins:
-    - https://characters.discloud.app
-    - https://whisp.discloud.app
-    - http://localhost:4200
-    - https://cavernas-e-dragoes.web.app
-    - https://cavernasedragoes.com.br
-    - https://www.cavernasedragoes.com.br
 
 twilio:
   account-sid: TWILIO_ACCOUNT_SID_PLACEHOLDER
@@ -33,3 +26,8 @@ sendgrid:
 security:
   token: SECURITY_TOKEN_PASSWORD_PLACEHOLDER
   expiration: SECURITY_TOKEN_EXPIRATION_PLACEHOLDER
+
+amqp:
+  exchange-name: EXCHANGE_NAME_PLACEHOLDER
+  queue-name: QUEUE_NAME_PLACEHOLDER
+  routing-key: ROUTING_KEY_PLACEHOLDER
